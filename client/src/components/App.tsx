@@ -13,7 +13,7 @@ interface IAppProps {
 }
 
 const client = new ApolloClient({
-    uri: 'http://localhost:4000/graphql'
+    uri: 'https://server.jainishan2323.now.sh/graphql'
 })
 export default class App extends React.PureComponent<IAppProps> {
     public render() {

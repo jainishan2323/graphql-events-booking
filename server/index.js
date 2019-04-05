@@ -4,17 +4,25 @@ const cors = require('cors');
 
 const { typeDefs, resolvers } = require('./schema/');
 
+const env = {
+    MONGO_USER: "ishan_mac",
+    MONGO_PASSWORD: "9828998833",
+    MONGO_DB: "graphql-juven"
+};
+
 // DB Connection
 mongoose
     .connect(
-        `mongodb+srv://${process.env.MONGO_USER}:${process.env.MONGO_PASSWORD}@mytestcluster-nmifr.mongodb.net/${process.env.MONGO_DB}?retryWrites=true`
+        `mongodb+srv://${env.MONGO_USER}:${env.MONGO_PASSWORD}@mytestcluster-nmifr.mongodb.net/${env.MONGO_DB}?retryWrites=true`
     )
 mongoose.connection.once('open', () => { console.log('DB Connected')});
 
 const server = new ApolloServer({
     cors: true,
     typeDefs,
-    resolvers
+    resolvers,
+    playground: true,
+    introspection: true
 });
 
 // server.applyMiddleware(cors());
