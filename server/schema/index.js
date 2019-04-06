@@ -11,6 +11,7 @@ const typeDefs = gql`
     type Mutation {
         createEvent(input: EventInput): Event
         createReservation(input: ReservationInput): Reservation
+        cancelReservation(reservation_id: ID!): Event
         createBooking(input: BookingInput): Booking
         cancelBooking(id: ID!): [Booking]
     }
@@ -41,13 +42,6 @@ const typeDefs = gql`
         name: String!
         quantity_available: Int
     }
-    type User {
-        id: ID!,
-        first_name: String!,
-        last_name: String!,
-        email: String,
-        phone: String,
-    }
     type Reservation {
         id: ID!
         event_id: String!
@@ -67,13 +61,25 @@ const typeDefs = gql`
     }
     type Booking {
         id: ID!
-        reservation_id: String!
-        user_details: String!
+        event: Event!
+        user_details: User!
     }
     input BookingInput {
-        event_id: String!
         reservation_id: String!
-        user_details: String!
+        user_details: UserInput!
+    }
+    type User {
+        id: ID!,
+        first_name: String!,
+        last_name: String!,
+        email: String,
+        phone: String,
+    }
+    input UserInput {
+        first_name: String!,
+        last_name: String!,
+        email: String,
+        phone: String,
     }
 `;
 
@@ -96,26 +102,65 @@ const resolvers = {
             return eventsModel.save();
         },
         createReservation: async (root, { input }) => {
-            const event = await EventsModel.findById(input.event_id);
+            try {
+                const event = await EventsModel.findById(input.event_id);
             
-            if (!event) {
-                throw new UserInputError(`Inavlid event id ${input.event_id}`);
+                if (!event) {
+                    throw new UserInputError(`Inavlid event id ${input.event_id}`);
+                }
+
+                let reservationModel = new ReservationModel({
+                    event_id: input.event_id,
+                    reserved_tickets: input.reserved_tickets
+                });
+
+                const reservation = await reservationModel.save();
+
+                // find the ticket and it's type in event model and update it
+                const updatedTickets = event.ticket_types.map((ticket) => {
+                    const inputTicket = input.reserved_tickets.find((_ticket) => _ticket.ticket_type === ticket.name);
+                    if (inputTicket && inputTicket.ticket_type) {
+                        return {
+                            name: ticket.name,
+                            quantity_available: ticket.quantity_available - inputTicket.ticket_count
+                        }
+                    }
+                    return {
+                        name: ticket.name,
+                        quantity_available: ticket.quantity_available
+                    };
+                });
+
+                if (Array.isArray(updatedTickets) && updatedTickets.length > 0) {
+                    await EventsModel.updateOne({ _id: input.event_id}, { ticket_types: updatedTickets });
+                }
+
+                return reservation;
+
+            } catch (err) {
+                throw new Error('Something went wrong with creating reservation', err);
+            }
+        },
+        cancelReservation: async (root, { reservation_id }) => {
+            const reservation = await ReservationModel.findById(reservation_id);
+
+            if (!reservation) {
+                throw new UserInputError(`Inavlid reservation id ${reservation_id}`);
             }
 
-            let reservationModel = new ReservationModel({
-                event_id: input.event_id,
-                reserved_tickets: input.reserved_tickets
-            });
+            const event = await EventsModel.findById(reservation.event_id);
 
-            const reservation = await reservationModel.save();
+            if (!event) {
+                throw new Error(`Reservation with the ${reservation.event_id} not found!`);
+            }
 
             // find the ticket and it's type in event model and update it
             const updatedTickets = event.ticket_types.map((ticket) => {
-                const inputTicket = input.reserved_tickets.find((_ticket) => _ticket.ticket_type === ticket.name);
-                if (inputTicket && inputTicket.ticket_type) {
+                const reservedTickets = reservation.reserved_tickets.find((_ticket) => _ticket.ticket_type === ticket.name);
+                if (reservedTickets && reservedTickets.ticket_type) {
                     return {
                         name: ticket.name,
-                        quantity_available: ticket.quantity_available - inputTicket.ticket_count
+                        quantity_available: ticket.quantity_available + reservedTickets.ticket_count
                     }
                 }
                 return {
@@ -124,25 +169,56 @@ const resolvers = {
                 };
             });
 
-            if (Array.isArray(updatedTickets) && updatedTickets.length > 0) {
-                await EventsModel.updateOne({ _id: input.event_id}, { ticket_types: updatedTickets });
-            }
+            // delete the reservation
+            await ReservationModel.deleteOne({_id: reservation_id});
 
-            return reservation;
+            // release the tickets
+            await EventsModel.updateOne({ _id: reservation.event_id}, { ticket_types: updatedTickets });
 
+            return EventsModel.findById(reservation.event_id);
+            
         },
-        // createBooking: (root, { input }) => {
-        //     let bookingModel = new BookingModel({
-        //         event_id: input.event_id,
-        //         reserved_tickets: input.reserved_tickets
-        //     });
+        createBooking: async (root, { input }) => {
+            try {
+                const reservation = await ReservationModel.findById(input.reservation_id);
+                if (!reservation) {
+                    throw new UserInputError('Reservation not found!');
+                }
+                const event = await EventsModel.findById(reservation.event_id);
+                if (!event) {
+                    throw new Error('Event not found');
+                }
+                let bookingModel = new BookingModel({
+                    user_details: input.user_details,
+                    event,
+                });
 
-        //     return bookingModel.save();
-        // },
-        // cancelBooking: async (root, { id }) => {
-        //     await BookingModel.deleteOne({ _id: id });
-        //     return BookingModel.find({});
-        // }
+                // remove the reservation of it now - todo: modularize
+                const updatedTickets = event.ticket_types.map((ticket) => {
+                    const reservedTickets = reservation.reserved_tickets.find((_ticket) => _ticket.ticket_type === ticket.name);
+                    if (reservedTickets && reservedTickets.ticket_type) {
+                        return {
+                            name: ticket.name,
+                            quantity_available: ticket.quantity_available + reservedTickets.ticket_count
+                        }
+                    }
+                    return {
+                        name: ticket.name,
+                        quantity_available: ticket.quantity_available
+                    };
+                });
+    
+                 // delete the reservation
+                await ReservationModel.deleteOne({_id: input.reservation_id});
+
+                // release the tickets
+                await EventsModel.updateOne({ _id: reservation.event_id}, { ticket_types: updatedTickets });
+
+                return bookingModel.save();
+            } catch (err) {
+                throw new Error('Unable to create booking');
+            }
+        },
     }
 }
 
