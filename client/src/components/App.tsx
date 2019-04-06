@@ -5,6 +5,7 @@ import { ApolloProvider } from 'react-apollo';
 import EventsList from './EventsList/';
 
 import {
+    StyledAppContainer,
     StyledH3,
 } from './styles';
 
@@ -19,10 +20,10 @@ export default class App extends React.PureComponent<IAppProps> {
     public render() {
         return (
             <ApolloProvider client={client}>
-                <div>
+                <StyledAppContainer>
                     <StyledH3>{this.props.title}</StyledH3>
                     <EventsList />
-                </div>
+                </StyledAppContainer>
             </ApolloProvider>
         )
     }

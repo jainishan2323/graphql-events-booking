@@ -15,10 +15,20 @@ const getEventsQuery = gql`
 
 class EventsList extends Component {
     public render() {
+        if (this.props.data.loading) {
+            return (
+                <Loader />
+            )
+        }
+
+        if (this.props.data.error) {
+            return (
+                <h3>Oops something went wrong!</h3>
+            )
+        }
         return (
             <section>
-                <h1>Hello</h1>
-                <Loader />
+                <h3>Damn it!</h3>
             </section>
         )
     }

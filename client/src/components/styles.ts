@@ -18,3 +18,9 @@ export const Loader = Styled.div`
     }
 `;
 
+export const StyledAppContainer = Styled.div`
+    max-width: 1024px;
+    margin: 0 auto;
+    padding: 8px;
+    background: #fff;
+`;
