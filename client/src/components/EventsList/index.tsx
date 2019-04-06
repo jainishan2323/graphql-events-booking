@@ -2,19 +2,29 @@ import React, { Component } from 'react';
 import { gql } from 'apollo-boost';
 import { graphql } from 'react-apollo';
 
+import EventsCard from './EventCard';
+
 import { Loader } from '../styles';
 
 const getEventsQuery = gql`
     {
         events {
+            id
             name
             banner_url
+            description
         }
     }
 `;
 
-class EventsList extends Component {
+class EventsList extends Component<any> {
+    public renderEventList = () => {
+        return this.props.data.events.map(
+                (event) => <EventsCard {...event} key={event.id} />
+        )
+    }
     public render() {
+        console.log(this.props.data);
         if (this.props.data.loading) {
             return (
                 <Loader />
@@ -28,7 +38,7 @@ class EventsList extends Component {
         }
         return (
             <section>
-                <h3>Damn it!</h3>
+                { this.renderEventList() }
             </section>
         )
     }

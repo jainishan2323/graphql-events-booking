@@ -9,7 +9,7 @@ import {
 ReactDOM.render(
     <>
         <GlobalStyles/>
-        <App title='Working React App'/>
+        <App title='Select Event'/>
     </>,
     document.getElementById('app')
 );

@@ -1,7 +1,7 @@
 import Styled from 'styled-components';
 
-export const StyledH3 = Styled.h3`
-    color: grey;
+export const StyledH2 = Styled.h2`
+    color: #444;
 `;
 
 export const Loader = Styled.div`
@@ -23,4 +23,10 @@ export const StyledAppContainer = Styled.div`
     margin: 0 auto;
     padding: 8px;
     background: #fff;
+`;
+
+export const Card = Styled.div`
+    border-radius: 4px;
+    padding: 0;
+    box-shadow: 0px 1px 3px 0px rgba(0,0,0,0.2), 0px 1px 1px 0px rgba(0,0,0,0.14), 0px 2px 1px -1px rgba(0,0,0,0.12)
 `;
