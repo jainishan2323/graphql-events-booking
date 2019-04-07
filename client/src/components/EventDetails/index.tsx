@@ -28,7 +28,10 @@ const GET_EVENT_DETAILS = gql`
 class EventDetails extends React.PureComponent<any> {
     public render() {
         return (
-            <Query query={GET_EVENT_DETAILS} variables={{ id: "5ca632f455a63b730bcf51db"}}>
+            <Query
+                query={GET_EVENT_DETAILS}
+                variables={{ id: "5ca632f455a63b730bcf51db"}}
+            >
                 {
                     (props) => {
                         if (props.data && props.data.loading) {
@@ -36,7 +39,9 @@ class EventDetails extends React.PureComponent<any> {
                         }
                         if (props.data.event) {
                             return (
-                                <EventContainer event={...props.data.event}/>
+                                <EventContainer
+                                    event={...props.data.event}
+                                />
                             )
                         }
                         return null;

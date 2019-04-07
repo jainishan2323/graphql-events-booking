@@ -35,3 +35,11 @@ export const LinkStyles = {
     color: '#444',
     textDecoration: 'none'
 };
+
+export const Button = Styled.button`
+    padding: 8px 32px;
+    font-size: 14px;
+    border-radius: 16px;
+    background: #3498db;
+    color: #fff;
+`;

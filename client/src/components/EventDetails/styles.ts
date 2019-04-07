@@ -8,6 +8,10 @@ export const Container = Styled.div`
             width: 100%;
         }
     }
+`;
+
+export const DescriptionContainer = Styled.section`
+    padding: 8px;
     .description {
         padding: 8px;
         border-bottom: 1px solid #ddd;
