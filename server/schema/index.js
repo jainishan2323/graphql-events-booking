@@ -7,6 +7,7 @@ const ReservationModel = require('../models/reservation');
 const typeDefs = gql`
     type Query {
         events: [Event!]!
+        event(event_id: ID!): Event!
     }
     type Mutation {
         createEvent(input: EventInput): Event
@@ -35,6 +36,7 @@ const typeDefs = gql`
         ticket_types: [InputTicketTypes]!
     }
     type TicketTypes {
+        id: ID!
         name: String!
         quantity_available: Int
     }
@@ -85,7 +87,10 @@ const typeDefs = gql`
 
 const resolvers = {
     Query: {
-        events: () => EventsModel.find({})
+        events: () => EventsModel.find({}),
+        event: (parent, args) => {
+            return EventsModel.findById(args.event_id)
+        }
     },
     Mutation: {
         createEvent: (root, { input }) => {

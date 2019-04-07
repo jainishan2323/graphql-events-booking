@@ -1,8 +1,7 @@
 import React from 'react';
-import ApolloClient from 'apollo-boost';
-import { ApolloProvider } from 'react-apollo';
 import { BrowserRouter as Router, Redirect, Route, Switch } from 'react-router-dom';
 import EventsList from './EventsList/';
+import EventDetails from './EventDetails';
 
 import {
     StyledAppContainer,
@@ -13,18 +12,31 @@ interface IAppProps {
     title: string;
 }
 
-const client = new ApolloClient({
-    uri: 'https://server.jainishan2323.now.sh/graphql'
-})
+
 export default class App extends React.PureComponent<IAppProps> {
     public render() {
         return (
-            <ApolloProvider client={client}>
-                <StyledAppContainer>
-                    <StyledH2>{this.props.title}</StyledH2>
-                    <EventsList />
-                </StyledAppContainer>
-            </ApolloProvider>
+            <StyledAppContainer>
+                <Router>
+                    <Switch>
+                        <Route
+                            exact
+                            path='/'
+                            render={() => <Redirect to='/events' />}
+                        />
+                        <Route
+                            exact
+                            path='/events'
+                            component={EventsList}
+                        />
+                        <Route
+                            exact
+                            path='/events/:event'
+                            component={EventDetails}
+                        />
+                    </Switch>
+                </Router>
+            </StyledAppContainer>
         )
     }
 }

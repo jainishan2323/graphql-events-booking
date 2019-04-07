@@ -13,6 +13,7 @@ const getEventsQuery = gql`
             name
             banner_url
             description
+            url
         }
     }
 `;
