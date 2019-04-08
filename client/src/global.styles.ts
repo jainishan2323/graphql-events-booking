@@ -17,7 +17,7 @@ export const GlobalStyles = createGlobalStyle`
     }
 
     .tertiary {
-        color: #aaa;
+        color: #78909c;
     }
 
     h1,h2,h3 {
@@ -25,5 +25,10 @@ export const GlobalStyles = createGlobalStyle`
     }
     h4,h5,p {
         margin: 8px 0;
+    }
+    .small {
+        font-size: 14px;
+        line-height: 20px;
+        vertical-align: middle;
     }
 `;
