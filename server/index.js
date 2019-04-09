@@ -7,7 +7,7 @@ const { typeDefs, resolvers } = require('./schema/');
 const env = {
     MONGO_USER: "ishan_mac",
     MONGO_PASSWORD: "9828998833",
-    MONGO_DB: "graphql-juven"
+    MONGO_DB: "events-reservation"
 };
 
 // DB Connection
