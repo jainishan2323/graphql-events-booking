@@ -11,7 +11,7 @@ import {
 const cloudUri = 'https://server.jainishan2323.now.sh/graphql';
 const local = 'http://localhost:4000/graphql';
 const client = new ApolloClient({
-    uri: cloudUri,
+    uri: local,
 })
 
 ReactDOM.render(

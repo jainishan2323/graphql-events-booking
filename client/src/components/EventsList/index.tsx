@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { gql } from 'apollo-boost';
-import { graphql } from 'react-apollo';
+import { graphql, Query } from 'react-apollo';
 
 import EventsCard from './EventCard';
 
 import { Loader } from '../styles';
+import { Container } from './styles';
 
 const getEventsQuery = gql`
     {
@@ -18,31 +19,51 @@ const getEventsQuery = gql`
     }
 `;
 
-class EventsList extends Component<any> {
-    public renderEventList = () => {
-        return this.props.data.events.map(
-                (event) => <EventsCard {...event} key={event.id} />
-        )
+const GET_EVENTS_LIST = gql`
+    {
+        events {
+            id
+            name
+            banner_url
+            description
+            url
+        }
     }
-    public render() {
-        console.log(this.props.data);
-        if (this.props.data.loading) {
-            return (
-                <Loader />
-            )
-        }
+`;
 
-        if (this.props.data.error) {
-            return (
-                <h3>Oops something went wrong!</h3>
-            )
-        }
+class EventsList extends Component<any> {
+    public render() {
         return (
-            <section>
-                { this.renderEventList() }
-            </section>
+            <Query
+                query={GET_EVENTS_LIST}
+                onCompleted={(data) => window.localStorage.setItem('events', JSON.stringify(data))}
+            >
+            {
+                (props) => {
+                    if (props.data && props.data.loading) {
+                        return <Loader />
+                    }
+                    if (props.data && props.data.error) {
+                        return <h3>Oops something went wrong!</h3>
+                    }
+                    if (props.data && Array.isArray(props.data.events)) {
+                        return (
+                            <Container>
+                                <h2>Select events</h2>
+                                {
+                                    props.data.events.map(
+                                        (event) => <EventsCard {...event} key={event.id} />
+                                        )
+                                }
+                            </Container>
+                        )
+                    }
+                    return null;
+                }
+            }
+            </Query>
         )
     }
 }
 
-export default graphql(getEventsQuery)(EventsList);
+export default EventsList;
