@@ -87,9 +87,10 @@ export const FormContainer = Styled.div`
                 margin: 0 auto;
                 padding: 8px 32px;
                 font-size: 14px;
-                border-radius: 16px;
-                background: #3498db;
+                border-radius: 8px;
+                background: #2874f0;
                 color: #fff;
+                cursor: pointer;
                 &:disabled {
                     opacity: 0.5
                 }

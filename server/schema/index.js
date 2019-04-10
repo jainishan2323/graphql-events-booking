@@ -189,7 +189,8 @@ const resolvers = {
         },
         createBooking: async (root, { input }) => {
             try {
-                const reservation = await ReservationModel.findById(input.reservation_id);
+                let reservation = await ReservationModel.findById(input.reservation_id);
+                reservation = reservation.toObject();
                 if (!reservation) {
                     throw new UserInputError('Reservation not found!');
                 }
@@ -208,7 +209,7 @@ const resolvers = {
                     if (reservedTickets && reservedTickets.ticket_type) {
                         return {
                             name: ticket.name,
-                            quantity_available: ticket.quantity_available + reservedTickets.ticket_count
+                            quantity_available: ticket.quantity_available - reservedTickets.ticket_count
                         }
                     }
                     return {
@@ -221,7 +222,7 @@ const resolvers = {
                 await ReservationModel.deleteOne({_id: input.reservation_id});
 
                 // release the tickets
-                await EventsModel.updateOne({ _id: reservation.event_id}, { ticket_types: updatedTickets });
+                // await EventsModel.updateOne({ _id: reservation.event_id}, { ticket_types: updatedTickets });
 
                 return bookingModel.save();
             } catch (err) {

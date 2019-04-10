@@ -89,7 +89,8 @@ class EventContainer extends React.PureComponent<any, any> {
                         <p>{ticket.quantity_available}</p>
                     </div>
                     {
-                        ticket.quantity_available ? <div><select name={ticket.name} onChange={this.handleOptionChange}>
+                        ticket.quantity_available || ticket.quantity_available > 0 ?
+                            <div><select name={ticket.name} onChange={this.handleOptionChange}>
                             {
                                 [0,1,2,3,4,5].map((val) => (
                                     <option
@@ -119,6 +120,8 @@ class EventContainer extends React.PureComponent<any, any> {
         this.setState({
             reservation_id: '',
             showCheckout: false,
+            reserved_tickets: {},
+            user_details: {},
         })
     }
 

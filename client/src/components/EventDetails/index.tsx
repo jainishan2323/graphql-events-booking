@@ -60,6 +60,7 @@ class EventDetails extends React.PureComponent<any> {
             <Query
                 query={GET_EVENT_DETAILS}
                 variables={{ id: this.eventId}}
+                pollInterval={500}
             >
                 {
                     (props) => {

@@ -1,11 +1,17 @@
 import Styled from 'styled-components';
 
 export const CardContainer = Styled.div`
-    width: 300px;
+    width: 700px;
     border-radius: 8px;
     margin: 16px auto;
+    display: flex;
+    background: white; 
     img {
-        width: 100%;
+        width: 400px;
+        min-width: 400px;
+        height: 200px;
+        margin: 12px;
+        border-radius: 8px;
     }
     article {
         padding: 8px;
@@ -16,6 +22,7 @@ export const CardContainer = Styled.div`
 
 export const Container = Styled.section`
     padding: 16px;
+    background: white;
     h2 {
         text-align: center;
     }

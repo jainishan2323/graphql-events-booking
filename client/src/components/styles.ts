@@ -6,7 +6,7 @@ export const StyledH2 = Styled.h2`
 
 export const Loader = Styled.div`
     border: 8px solid #f3f3f3; /* Light grey */
-    border-top: 8px solid #3498db; /* Blue */
+    border-top: 8px solid #2874f0; /* Blue */
     border-radius: 50%;
     width: 40px;
     height: 40px;
@@ -32,16 +32,18 @@ export const Card = Styled.div`
 `;
 
 export const LinkStyles = {
-    color: '#444',
-    textDecoration: 'none'
+    color: 'white',
+    textDecoration: 'none',
+    cursor: 'pointer'
 };
 
 export const Button = Styled.button`
     padding: 8px 32px;
     font-size: 14px;
-    border-radius: 16px;
-    background: #3498db;
+    border-radius: 8px;
+    background: #2874f0;
     color: #fff;
+    cursor: pointer;
     &:disabled {
         opacity: 0.5
     }
